@@ -1,57 +1,39 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
+from urllib import request
+from bs4 import BeautifulSoup as bs
+import re
+from numba import jit
+@jit
+def get_egg(eggurl):
+    
+    resp = request.urlopen(eggurl)
+    html_data = resp.read()
 
-# C extensions
-*.so
+    soup = bs(html_data, 'html.parser', from_encoding='utf-8') 
+    egglist = soup.find_all(text=re.compile("元/斤"))
+    if egglist !=[]:
+        megg=[]
+        for i in egglist:
+            a=re.findall(r"\d+\.?\d*",i)
+            c=list(str(a))
+            d=int(c[2])+int(c[4])*0.1+int(c[5])*0.01
+            megg.append(d)
+    
+            meanegg=sum(megg)/len(megg)
+            return meanegg
+        
+    
+#hhhhh求每页里面链接里价格
+@jit
+def get_zong(url_index):
+    resp1 = request.urlopen(url_index)
+    html_data1 = resp1.read()
 
-# Distribution / packaging
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
+    soup1 = bs(html_data1, 'html.parser', from_encoding='utf-8') 
+    urllist=soup1(href=re.compile("beifang"),title=re.compile("鸡蛋价格最新行情"))
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*,cover
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
+    for tag in urllist:
+        urlchushi='http://www.jidan7.com'+tag.get('href')      
+        print(urlchushi)
+        print(get_egg(urlchushi))
+get_zong('http://www.jidan7.com/xh/jiage/beifang/index.html')
