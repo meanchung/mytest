@@ -15,5 +15,5 @@ for i in range(len(df)):
         
         df.loc[i,'date'] = df.loc[i,"l"]
     print(df.loc[i,'date'])
-    
+print('完成')   
 df.to_csv("E:\\data\\30AGL9min5test.csv")
